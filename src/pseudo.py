@@ -88,9 +88,9 @@ def aggragate_stip_file(round=None, flag=None):
 
     print(clineM.shape, labelM.shape, stipsM.shape)
 
-    np.save('./stips_r%d_f%s.txt'%(round, flag), stipsM)
-    np.save('./label_r%d_f%s.txt'%(round, flag), labelM)
-    np.save('./cline_r%d_f%s.txt'%(round, flag), clineM)
+    np.save('./stips_r%d_f%s'%(round, flag), stipsM)
+    np.save('./label_r%d_f%s'%(round, flag), labelM)
+    np.save('./cline_r%d_f%s'%(round, flag), clineM)
 
 if __name__ == '__main__': 
     # read_stip_file(path='../data/brush_hair/Blonde_being_brushed_brush_hair_f_nm_np2_ri_med_0.avi.txt')
