@@ -22,12 +22,13 @@ def read_line_from_text(path=None):
 
 
 def read_stip_file(path=None, linedict=None, fact=1): 
+    global total 
     stips = []
     for count, line in enumerate(read_line_from_text(path=path)):
         # the first 3 lines are infos about the stip file and will be discarded.
-        if count-3 in linedict:
+        if count-3 >= 0:
             # sampleing
-            if (count-3)%fact == 0: 
+            if (linedict == total).any():
                 sline = line.strip().split()
                 # print(sline)
 
@@ -59,8 +60,9 @@ def aggragate_stip_file(round=None, flag=None):
         3:5367763
     }
 
-    random.seed(a=0)
-    linedict = random.sample([i for i in range(clinedict[round])], 100000)
+    random.seed(a=round)
+    linedict = np.array(random.sample([i for i in range(clinedict[round])], 100000))
+    print(linedict[:7])
     
     stips = []
     cline = []
@@ -116,6 +118,8 @@ if __name__ == '__main__':
     cates = os.listdir(stipdir)
     # print(len(cates))
     # read_stip_file(path='../data/brush_hair/Blonde_being_brushed_brush_hair_f_nm_np2_ri_med_0.avi.txt')
+
+    total = 0
 
     # flag: {0：not used, 1:train, 2:test}
     aggragate_stip_file(round=1, flag='1')
