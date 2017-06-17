@@ -131,7 +131,6 @@ if __name__ == '__main__':
     total = 0
 
     # flag: {0：not used, 1:train, 2:test}
-    # aggragate_stip_file(round=1, flag='1')
+    aggragate_stip_file(round=1, flag='2')
     # aggragate_stip_file(round=2, flag='1')
-    aggragate_stip_file(round=3, flag='1')
-    
+    # aggragate_stip_file(round=3, flag='1')
