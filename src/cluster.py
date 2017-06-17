@@ -12,6 +12,53 @@ import sklearn.neighbors as sklNeighbors
 from sklearn.externals import joblib
 
 
+def read_line_from_text(path=None): 
+    # path = utilities.getPath(path)
+    rf = open(path, 'r')
+
+    while True:
+        line = rf.readline()
+        if line:
+            yield line
+        else:
+            break
+
+    rf.close()
+
+
+def read_stip_file(path=None, linedict=None, fact=1, mode='all '): 
+    # global total_1, total_2
+    stips = []
+    for count, line in enumerate(read_line_from_text(path=path)):
+        # the first 3 lines are infos about the stip file and will be discarded.
+        if count-3 >= 0:
+            # sampleing
+            # if (linedict == total_2).any():
+            sline = line.strip().split()
+            # print(sline)
+
+            try:
+                # map(float, sline)
+                [float(s) for s in sline]
+            except Exception:
+                print(" ValueError: could not convert string to float: ", sline)
+                pass
+            else:
+                # fline = map(float, sline)
+                fline = [float(s) for s in sline[7:]]
+                stips += [fline]
+                # total_1 += 1
+            # total_2 += 1
+        else:
+            # print(line.strip().split())
+            pass
+
+    '''Be careful of empty list!!! len(stips) for cline'''
+    # print(len(stips), total_1, total_2)
+    print(len(stips), len(stips[0]))
+    return len(stips), stips
+
+
 def kMeans(dataSet=None, k=None):
     kms = sklCluster.KMeans(n_clusters=k, n_jobs=1, random_state=0)
     kms.fit(dataSet)
@@ -33,17 +80,106 @@ def build_hist(dataset, bins=None):
     return np.histogram(dataset, bins, range = (0, bins))[0]
 
 
-if __name__ == '__main__':
-    # flag: {0：not used, 1:train, 2:test}
-    round = 1 
-    flag = 1
+def generate_kmeans_model(cates=None, round=None, flag=None, K=None): 
+    '''generating kMmeas model offline'''
     x_rand = np.load('../data/stips_r%d_f%d.npy'%(round,flag))
 
-    K = 128
-    kms = sklCluster.KMeans(n_clusters=K, n_jobs=-1, random_state=0).fit(x_rand)
+    kms = sklCluster.KMeans(n_clusters=K, n_jobs=-1, random_state=0)
+    kms.fit(x_rand)
 
     joblib.dump(kms, '../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K), compress=3)
     # kms = joblib.load(kms, '../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K))
 
     np.save('../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K), kms.cluster_centers_)
-    # centroids = np.load('../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K))
+    # centroids = np.load('../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K)) 
+
+
+def apply_kmeans_model(cates=None, round=None, flag=None, K=None): 
+    '''generating cline, label and bag-of-features, which can be feed to classifier or regressor directly'''
+    # joblib.dump(kms, '../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K), compress=3)
+    kms = joblib.load('../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K))
+
+    # np.save('../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K), kms.cluster_centers_)
+    # centroids = np.load('../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K)) 
+
+    # round level
+    # flag: {0：not used, 1:train, 2:test}
+
+    # clinedict = {
+    #     1:5613856,
+    #     2:5483247,
+    #     3:5367763
+    # }
+
+    # random.seed(a=round)
+    # linedict = np.array(random.sample([i for i in range(clinedict[round])], 100000))
+    # print(linedict[:7])
+    
+    bovfs = [] # bag-of-visual-features
+    cline = []
+    label = []
+
+    for j in range(len(cates)):
+        # cate level
+        print(j+1, cates[j])
+        print('%s/%s_test_split%d.txt'%(splitdir, cates[j], round))
+
+        # read split file
+        # c0,c1,c2 = 0,0,0
+        for line in read_line_from_text(path='%s/%s_test_split%d.txt'%(splitdir, cates[j], round)):
+            # sample level
+            sline = line.strip().split()
+            vname, mask = sline[0], sline[1]
+
+            if mask == flag:
+                c,s = read_stip_file(path='%s/%s/%s.txt'%(stipdir, cates[j], vname))
+                # predicting 
+                index = kms.predict(s)
+                hist = np.histogram(index, K, range = (0, K))[0]
+                # hist = knn_search(index, centroids)
+
+                cline += [c]
+                bovfs += hist
+                label += [j]
+            else:
+                pass
+            # print('\n')
+
+            # ''' debug '''
+            # if sline[1] == '0': c0 +=1
+            # elif sline[1] == '1' : c1 += 1
+            # else: c2 += 1
+
+            # break
+
+        # print(c0,c1,c2)
+
+        # break
+
+    # to reduce the memory load
+    bovfs = np.array(bovfs)
+    label = np.array(label).reshape(-1,1)
+    cline = np.array(cline).reshape(-1,1)
+
+    print([cline.shape, label.shape, bovfs.shape])
+
+    np.save('../data/bovfs_r%d_f%s'%(round, flag), bovfs)
+    np.save('../data/label_r%d_f%s'%(round, flag), label)
+    np.save('../data/cline_r%d_f%s'%(round, flag), cline) 
+
+
+if __name__ == '__main__':
+    splitdir = '../testTrainMulti_7030_splits'
+    stipdir = '../hmdb51_org_stips'
+
+    cates = os.listdir(stipdir)
+    # print(len(cates))
+    # read_stip_file(path='../data/brush_hair/Blonde_being_brushed_brush_hair_f_nm_np2_ri_med_0.avi.txt')
+
+    # flag: {0：not used, 1:train, 2:test}
+    round = 1 
+    flag = 1
+    K = 128
+    
+    generate_kmeans_model(cates=cates, round=round, flag=flag, K=K)
+    apply_kmeans_model(cates=cates, round=round, flag=flag, K=K)

@@ -21,7 +21,7 @@ def read_line_from_text(path=None):
     rf.close()
 
 
-def read_stip_file(path=None, linedict=None, fact=1): 
+def read_stip_file(path=None, linedict=None, fact=1, mode='dropout'): 
     global total_1, total_2
     stips = []
     for count, line in enumerate(read_line_from_text(path=path)):
