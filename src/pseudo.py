@@ -42,11 +42,13 @@ def read_stip_file(path=None, linedict=None, fact=1):
                     # fline = map(float, sline)
                     fline = [float(s) for s in sline[7:]]
                     stips += [fline]
+            total += 1
         else:
             # print(line.strip().split())
             pass
 
-    print(len(stips), len(stips[0]))
+    '''Be careful of empty list!!!'''
+    print(len(stips))
     return len(stips), stips
 
 
