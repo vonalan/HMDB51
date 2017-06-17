@@ -22,47 +22,57 @@ def read_line_from_text(path=None):
 
 
 def read_stip_file(path=None, linedict=None, fact=1): 
-    stips = []
-    for count, line in enumerate(read_line_from_text(path=path)):
+    global total
+    # stips = []
+    cline = 0
+    for count, _ in enumerate(read_line_from_text(path=path)):
         # the first 3 lines are infos about the stip file and will be discarded.
-        if count-3 in linedict:
-            # sampleing
-            if (count-3)%fact == 0: 
-                sline = line.strip().split()
-                # print(sline)
+        if count-3 >= 0:
+            # if total in linedict: 
+            if (linedict == total).any():
+            # # sampleing
+            # if (count-3)%fact == 0: 
+            #     sline = line.strip().split()
+            #     # print(sline)
 
-                try:
-                    # map(float, sline)
-                    [float(s) for s in sline]
-                except Exception:
-                    print(" ValueError: could not convert string to float: ", sline)
-                    pass
-                else:
-                    # fline = map(float, sline)
-                    fline = [float(s) for s in sline[7:]]
-                    stips += [fline]
+            #     try:
+            #         # map(float, sline)
+            #         [float(s) for s in sline]
+            #     except Exception:
+            #         print(" ValueError: could not convert string to float: ", sline)
+            #         pass
+            #     else:
+            #         # fline = map(float, sline)
+            #         fline = [float(s) for s in sline[7:]]
+            #         stips += [fline]
+                cline += 1
+            total += 1
         else:
             # print(line.strip().split())
             pass
+        # print(cline, total)
 
-    print(len(stips), len(stips[0]))
-    return len(stips), stips
+    # print(len(stips), len(stips[0]))
+    # return len(stips), stips
+    print(cline)
+    return cline
 
 
 def aggragate_stip_file(round=None, flag=None):
     # round level
     # flag: {0：not used, 1:train, 2:test}
-
+    
     clinedict = {
         1:5613856,
         2:5483247,
         3:5367763
     }
 
-    random.seed(a=0)
-    linedict = random.sample([i for i in range(clinedict[round])], 100000)
-    
-    stips = []
+    random.seed(a=round)
+    linedict = np.array(random.sample([i for i in range(clinedict[round])], 100000))
+    print(linedict[:7])
+
+    # stips = []
     cline = []
     label = []
 
@@ -78,9 +88,9 @@ def aggragate_stip_file(round=None, flag=None):
             vname, mask = sline[0], sline[1]
 
             if mask == flag:
-                c,s = read_stip_file(path='%s/%s/%s.txt'%(stipdir, cates[j], vname), linedict=linedict)
+                c = read_stip_file(path='%s/%s/%s.txt'%(stipdir, cates[j], vname), linedict=linedict)
                 cline += [c]
-                stips += s
+                # stips += s
                 label += [j]
             else:
                 pass
@@ -98,13 +108,14 @@ def aggragate_stip_file(round=None, flag=None):
         # break
 
     # to reduce the memory load
-    stips = np.array(stips)
+    # stips = np.array(stips)
     label = np.array(label).reshape(-1,1)
     cline = np.array(cline).reshape(-1,1)
 
-    print([cline.shape, label.shape, stips.shape])
+    # print([cline.shape, label.shape, stips.shape])
+    print([cline.shape, label.shape, (cline.sum(),1)])
 
-    np.save('../data/stips_r%d_f%s'%(round, flag), stips)
+    # np.save('../data/stips_r%d_f%s'%(round, flag), stips)
     np.save('../data/label_r%d_f%s'%(round, flag), label)
     np.save('../data/cline_r%d_f%s'%(round, flag), cline)
 
@@ -117,8 +128,10 @@ if __name__ == '__main__':
     # print(len(cates))
     # read_stip_file(path='../data/brush_hair/Blonde_being_brushed_brush_hair_f_nm_np2_ri_med_0.avi.txt')
 
+    total = 0
+
     # flag: {0：not used, 1:train, 2:test}
-    aggragate_stip_file(round=1, flag='1')
-    # # aggragate_stip_file(round=2, flag='1')
-    # aggragate_stip_file(round=3, flag='1')
+    # aggragate_stip_file(round=1, flag='1')
+    # aggragate_stip_file(round=2, flag='1')
+    aggragate_stip_file(round=3, flag='1')
     
