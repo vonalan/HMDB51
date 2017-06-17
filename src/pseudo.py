@@ -22,13 +22,13 @@ def read_line_from_text(path=None):
 
 
 def read_stip_file(path=None, linedict=None, fact=1): 
-    global total 
+    global total_1, total_2
     stips = []
     for count, line in enumerate(read_line_from_text(path=path)):
         # the first 3 lines are infos about the stip file and will be discarded.
         if count-3 >= 0:
             # sampleing
-            if (linedict == total).any():
+            if (linedict == total_2).any():
                 sline = line.strip().split()
                 # print(sline)
 
@@ -42,13 +42,14 @@ def read_stip_file(path=None, linedict=None, fact=1):
                     # fline = map(float, sline)
                     fline = [float(s) for s in sline[7:]]
                     stips += [fline]
-            total += 1
+                    total_1 += 1
+            total_2 += 1
         else:
             # print(line.strip().split())
             pass
 
     '''Be careful of empty list!!!'''
-    print(len(stips))
+    print(len(stips), total_1, total_2)
     return len(stips), stips
 
 
@@ -121,10 +122,9 @@ if __name__ == '__main__':
     # print(len(cates))
     # read_stip_file(path='../data/brush_hair/Blonde_being_brushed_brush_hair_f_nm_np2_ri_med_0.avi.txt')
 
-    total = 0
+    total_1, total_2 = 0, 0
 
     # flag: {0：not used, 1:train, 2:test}
     aggragate_stip_file(round=1, flag='1')
     # aggragate_stip_file(round=2, flag='1')
     # aggragate_stip_file(round=3, flag='1')
-    
