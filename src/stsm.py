@@ -14,7 +14,7 @@ def run_rbfnn(trainX, trainY, W, U, V):
 
 
 # outline of LGEM calculating
-def calc_STSM(trainX, trainY, W, U, V, Q=0.1):
+def calc_stsm(trainX, trainY, W, U, V, Q=0.1):
     deltaX = np.random.uniform(-Q, Q, (1000, np.shape(trainX)[1]))
     H = np.shape(deltaX)[0]
 

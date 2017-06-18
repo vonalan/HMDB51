@@ -55,7 +55,8 @@ def innerCluster(trainX, trainY, numCenter, alpha):
         subX = trainX[trainY[:, i] == 1, :]
 
         '''compute U'''
-        u = kMeans(subX, int(cn[0, i]))
+        # u = kMeans(dataSet=subX, k=int(cn[0, i]))
+        u = sklCluster.KMeans(n_clusters=int(cn[0, i]), n_jobs=1, random_state=0).fit(subX).cluster_centers_
         U[begin:end, :] = u
 
 

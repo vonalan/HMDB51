@@ -43,7 +43,7 @@ def auto_normalize(dataset, bias=0.0, scale=1.0, mode=None):
 
 # api
 def calc_err(y_true, y_predict):
-    return sklmse(y_true, y_predict, multioutput='True')
+    return sklmse(y_true, y_predict, multioutput='raw_values')
 
 
 def calc_acc(y_true, y_predict):
@@ -59,7 +59,7 @@ def calc_acc(y_true, y_predict):
 if __name__ == '__main__':
     round = 1 
     # flag = '1'
-    K = 4000
+    K = 128
     M = 90
     C = 51
 
@@ -74,6 +74,7 @@ if __name__ == '__main__':
 
     out_train = rbfnnC.predict(x_train)
     out_testa = rbfnnC.predict(x_testa)
+    print(out_train.shape, out_testa.shape)
     
     acc_train = calc_acc(y_train, out_train)
     err_train = calc_err(y_train, out_train)
@@ -85,4 +86,4 @@ if __name__ == '__main__':
     # stsm_testa = stsm.calc_stsm(x_testa, y_testa, rbfnnC.W, rbfnnC.U, rbfnnC.V, Q=0.1)
     # lgem_testa = np.power(np.sqrt(err_testa) + np.sqrt(stsm_testa),2)
 
-    print(acc_train, err_train, acc_testa, err_testa, lgem_train)
+    print(acc_train, err_train.mean(), acc_testa, err_testa.mean(), stsm_train.mean(), lgem_train.mean())

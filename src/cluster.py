@@ -147,11 +147,15 @@ def apply_kmeans_model(cates=None, round=None, flag=None, K=None, C=None):
                 l[0,j] = 1
 
                 # predicting
-                # index = kms.predict(s)
-                index = knn_search(s, centroids)
-                print(index.shape, index[:10,:].T)
-                hist = np.histogram(index, K, range = (0, K))[0].reshape((-1,K))
-                print(hist.shape, hist[0,:10])
+                hist = np.zeros((1,K))
+                if s.shape[0] == 0: 
+                    pass 
+                else: 
+                    # index = kms.predict(s)
+                    index = knn_search(s, centroids)
+                    print(index.shape, index[:10,:].T)
+                    hist = np.histogram(index, K, range = (0, K))[0].reshape((-1,K))
+                    print(hist.shape, hist[0,:10])                
 
                 cline = np.vstack((cline, c))
                 label = np.vstack((label, l))
@@ -180,9 +184,9 @@ def apply_kmeans_model(cates=None, round=None, flag=None, K=None, C=None):
 
     print([cline.shape, label.shape, bovfs.shape])
 
-    np.save('../data/bovfs_r%d_f%s_%d'%(round, flag, K), bovfs)
-    np.save('../data/label_r%d_f%s_%d'%(round, flag, K), label)
-    np.save('../data/cline_r%d_f%s_%d'%(round, flag, K), cline) 
+    np.save('../data/bovfs_r%d_f%s_k%d'%(round, flag, K), bovfs)
+    np.save('../data/label_r%d_f%s_k%d'%(round, flag, K), label)
+    np.save('../data/cline_r%d_f%s_k%d'%(round, flag, K), cline) 
 
 
 if __name__ == '__main__':
