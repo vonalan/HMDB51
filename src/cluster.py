@@ -165,7 +165,7 @@ def apply_kmeans_model(cates=None, round=None, flag=None, K=None):
 
         # print(c0,c1,c2)
 
-        break
+        # break
 
     # to reduce the memory load
     bovfs = np.array(bovfs)
@@ -188,9 +188,13 @@ if __name__ == '__main__':
     # read_stip_file(path='../data/brush_hair/Blonde_being_brushed_brush_hair_f_nm_np2_ri_med_0.avi.txt')
 
     # flag: {0：not used, 1:train, 2:test}
-    round = 1 
-    flag = '2'
-    K = 128
+    # round = 1
+    # flag = '1'
+    # K = 4000
+
+    round = int(sys.argv[1])
+    flag = sys.argv[2]
+    K = int(sys.argv[3])
     
     # generate_kmeans_model(cates=cates, round=round, flag=flag, K=K)
     apply_kmeans_model(cates=cates, round=round, flag=flag, K=K)
