@@ -148,7 +148,7 @@ def apply_kmeans_model(cates=None, round=None, flag=None, K=None, C=None):
 
                 # predicting
                 hist = np.zeros((1,K))
-                if s.shape[0] == 0: 
+                if len(s) == 0:
                     pass 
                 else: 
                     # index = kms.predict(s)
