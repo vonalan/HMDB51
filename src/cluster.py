@@ -98,13 +98,13 @@ def generate_kmeans_model(cates=None, round=None, flag=None, K=None):
     # centroids = np.load('../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K)) 
 
 
-def apply_kmeans_model(cates=None, round=None, flag=None, K=None): 
+def apply_kmeans_model(cates=None, round=None, flag=None, K=None):
     '''generating cline, label and bag-of-features, which can be feed to classifier or regressor directly'''
     # joblib.dump(kms, '../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K), compress=3)
     # kms = joblib.load('../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K))
 
     # np.save('../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K), kms.cluster_centers_)
-    centroids = np.load('../data/kmeans_r%d_f%s_k%d.npy'%(round, flag, K))
+    centroids = np.load('../data/kmeans_r%d_f%s_k%d.npy'%(round, '1', K))
 
     # round level
     # flag: {0：not used, 1:train, 2:test}
@@ -189,7 +189,7 @@ if __name__ == '__main__':
 
     # flag: {0：not used, 1:train, 2:test}
     round = 1 
-    flag = '1'
+    flag = '2'
     K = 128
     
     # generate_kmeans_model(cates=cates, round=round, flag=flag, K=K)
