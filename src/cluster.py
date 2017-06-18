@@ -26,6 +26,10 @@ def read_line_from_text(path=None):
     rf.close()
 
 
+def process_line_from_text():
+    pass
+
+
 def read_stip_file(path=None, linedict=None, fact=1, mode='all '): 
     # global total_1, total_2
     stips = []
@@ -97,10 +101,10 @@ def generate_kmeans_model(cates=None, round=None, flag=None, K=None):
 def apply_kmeans_model(cates=None, round=None, flag=None, K=None): 
     '''generating cline, label and bag-of-features, which can be feed to classifier or regressor directly'''
     # joblib.dump(kms, '../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K), compress=3)
-    kms = joblib.load('../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K))
+    # kms = joblib.load('../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K))
 
     # np.save('../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K), kms.cluster_centers_)
-    # centroids = np.load('../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K)) 
+    centroids = np.load('../data/kmeans_r%d_f%s_k%d.npy'%(round, flag, K))
 
     # round level
     # flag: {0：not used, 1:train, 2:test}
@@ -115,9 +119,9 @@ def apply_kmeans_model(cates=None, round=None, flag=None, K=None):
     # linedict = np.array(random.sample([i for i in range(clinedict[round])], 100000))
     # print(linedict[:7])
     
-    bovfs = [] # bag-of-visual-features
-    cline = []
-    label = []
+    bovfs = np.zeros((0,K)) # bag-of-visual-features
+    cline = np.zeros((0,1))
+    label = np.zeros((0,1))
 
     for j in range(len(cates)):
         # cate level
@@ -133,14 +137,21 @@ def apply_kmeans_model(cates=None, round=None, flag=None, K=None):
 
             if mask == flag:
                 c,s = read_stip_file(path='%s/%s/%s.txt'%(stipdir, cates[j], vname))
+                # processing
+                c = np.array([c]).reshape((-1, 1))
+                l = np.array([j]).reshape((-1, 1))
                 # predicting 
-                index = kms.predict(s)
-                hist = np.histogram(index, K, range = (0, K))[0]
-                # hist = knn_search(index, centroids)
+                # index = kms.predict(s)
+                index = knn_search(s, centroids)
+                print(index.shape, index[:10,:].T)
+                hist = np.histogram(index, K, range = (0, K))[0].reshape((-1,K))
+                print(hist.shape, hist[0,:10])
 
-                cline += [c]
-                bovfs += hist
-                label += [j]
+                cline = np.vstack((cline, c))
+                label = np.vstack((label, l))
+                bovfs = np.vstack((bovfs, hist))
+                print(cline.shape, label.shape, bovfs.shape)
+
             else:
                 pass
             # print('\n')
@@ -154,7 +165,7 @@ def apply_kmeans_model(cates=None, round=None, flag=None, K=None):
 
         # print(c0,c1,c2)
 
-        # break
+        break
 
     # to reduce the memory load
     bovfs = np.array(bovfs)
@@ -178,8 +189,8 @@ if __name__ == '__main__':
 
     # flag: {0：not used, 1:train, 2:test}
     round = 1 
-    flag = 1
+    flag = '1'
     K = 128
     
-    generate_kmeans_model(cates=cates, round=round, flag=flag, K=K)
+    # generate_kmeans_model(cates=cates, round=round, flag=flag, K=K)
     apply_kmeans_model(cates=cates, round=round, flag=flag, K=K)
