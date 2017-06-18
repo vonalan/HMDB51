@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     rbfnnC = rbfnn.RBFNN(indim=K, numCenter=M, outdim=C, alpha=1.0)
 
-    c_train, y_train, x_train = load_data(round=round, flag='2', K=K)
+    c_train, y_train, x_train = load_data(round=round, flag='1', K=K)
     x_train, bias, scale = auto_normalize(x_train, bias=0.0, scale=1.0, mode='train')
     rbfnnC.fit(x_train, y_train)
 
