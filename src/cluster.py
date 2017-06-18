@@ -59,7 +59,8 @@ def read_stip_file(path=None, linedict=None, fact=1, mode='all '):
 
     '''Be careful of empty list!!! len(stips) for cline'''
     # print(len(stips), total_1, total_2)
-    print(len(stips), len(stips[0]))
+    # print(len(stips), len(stips[0]))
+    print(len(stips))
     return len(stips), stips
 
 
@@ -174,9 +175,9 @@ def apply_kmeans_model(cates=None, round=None, flag=None, K=None):
 
     print([cline.shape, label.shape, bovfs.shape])
 
-    np.save('../data/bovfs_r%d_f%s'%(round, flag), bovfs)
-    np.save('../data/label_r%d_f%s'%(round, flag), label)
-    np.save('../data/cline_r%d_f%s'%(round, flag), cline) 
+    np.save('../data/bovfs_r%d_f%s_%d'%(round, flag, K), bovfs)
+    np.save('../data/label_r%d_f%s_%d'%(round, flag, K), label)
+    np.save('../data/cline_r%d_f%s_%d'%(round, flag, K), cline) 
 
 
 if __name__ == '__main__':

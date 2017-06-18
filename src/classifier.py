@@ -11,6 +11,16 @@ import stsm
 import scale
 
 
+def load_data(round=None, flag=None, K=None): 
+    '''cline, label, bovfs'''
+    cline = np.load('../data/cline_r%d_f%s_k%d.npy'%(round, flag, K))
+    label = np.load('../data/label_r%d_f%s_k%d.npy'%(round, flag, K))
+    bofvs = np.load('../data/bofvs_r%d_f%s_k%d.npy'%(round, flag, K))
+    
+    return cline, label, bofvs
+    # pass 
+
+
 # scale to [-1,1]
 def auto_normalize(dataset, bias=0.0, scale=1.0, mode=None): 
     xbias = bias
@@ -45,31 +55,34 @@ def calc_acc(y_true, y_predict):
 
     return acc
 
-def load_data(): 
-    '''cline, label, bovfs'''
-    pass 
-
-def normalization(): 
-    '''necessary'''
-    pass 
 
 if __name__ == '__main__':
-    c_train, y_train, x_train = load_data()
-    x_train, bias, scale = scale.auto_normalize()
+    round = 1 
+    # flag = '1'
+    K = 4000
+    M = 90
+    C = 51
 
-    rbfnnC = rbfnn.RBFNN(indim=x_train.shape[1], numCenter=90, outdim=y_train.shape[1], alpha=1.0)
-    rbfnn.fit(x_train, y_train)
-    out_train = rbfnn.predict(x_train)
+    rbfnnC = rbfnn.RBFNN(indim=K, numCenter=M, outdim=C, alpha=1.0)
 
-    c_testa, y_testa, x_testa = load_data()
-    x_testa, _, _ = scale.auto_normalize()
-    out_testa = rbfnn.predict(x_testa)
+    c_train, y_train, x_train = load_data(round=round, flag='1', K=K)
+    x_train, bias, scale = auto_normalize(x_train, bias=0.0, scale=1.0, mode='train')
+    rbfnnC.fit(x_train, y_train)
 
-    # evaluation
+    c_testa, y_testa, x_testa = load_data(round=round, flag='1', K=K)
+    x_testa, _, _ = auto_normalize(x_testa, bias=bias, scale=scale, mode='valid')
+
+    out_train = rbfnnC.predict(x_train)
+    out_testa = rbfnnC.predict(x_testa)
+    
     acc_train = calc_acc(y_train, out_train)
     err_train = calc_err(y_train, out_train)
+    stsm_train = stsm.calc_stsm(x_train, y_train, rbfnnC.W, rbfnnC.U, rbfnnC.V, Q=0.1)
+    lgem_train = np.power(np.sqrt(err_train) + np.sqrt(stsm_train),2)
+
     acc_testa = calc_acc(y_testa, out_testa)
     err_testa = calc_err(y_testa, out_testa)
+    # stsm_testa = stsm.calc_stsm(x_testa, y_testa, rbfnnC.W, rbfnnC.U, rbfnnC.V, Q=0.1)
+    # lgem_testa = np.power(np.sqrt(err_testa) + np.sqrt(stsm_testa),2)
 
-    stsm_train = stsm.calc_stsm(x_train, y_train, rbfnnC.W, rbfnnC.U, rbfnnC.V, Q=0.1)
-    lge_train = np.power(np.sqrt(err_train) + np.sqrt(stsm_train),2)
+    print(acc_train, err_train, acc_testa, err_testa, lgem_train)
