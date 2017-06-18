@@ -114,7 +114,7 @@ def discritize(dataset, numClass=None, num_each_class=None, mode='kMeans'):
 class RBFNN(object):
     '''to provide the same api as sklearn'''
     # initialize the archietecture for Neural Network
-    def __init__(self, indim=None, numCenter=None, outdim=None, alpha=1.0, Q=0.1):
+    def __init__(self, indim=None, numCenter=None, outdim=None, alpha=1.0):
         # components 1
         self.indim = indim # K
         self.numCenter = numCenter # M 
@@ -128,7 +128,6 @@ class RBFNN(object):
         '''new'''
         # components 3
         self.alpha = alpha #???
-        self.Q = Q
         self.func = self.run_rbfnn
         '''new'''
     

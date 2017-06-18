@@ -57,7 +57,7 @@ if __name__ == '__main__':
     c_train, y_train, x_train = load_data()
     x_train, bias, scale = scale.auto_normalize()
 
-    rbfnnC = rbfnn.RBFNN(indim=x_train.shape[1], numCenter=90, outdim=y_train.shape[1])
+    rbfnnC = rbfnn.RBFNN(indim=x_train.shape[1], numCenter=90, outdim=y_train.shape[1], alpha=1.0)
     rbfnn.fit(x_train, y_train)
     out_train = rbfnn.predict(x_train)
 
