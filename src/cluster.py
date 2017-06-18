@@ -60,7 +60,7 @@ def read_stip_file(path=None, linedict=None, fact=1, mode='all '):
     '''Be careful of empty list!!! len(stips) for cline'''
     # print(len(stips), total_1, total_2)
     # print(len(stips), len(stips[0]))
-    print(len(stips))
+    # print(len(stips))
     return len(stips), stips
 
 
@@ -121,8 +121,8 @@ def apply_kmeans_model(cates=None, round=None, flag=None, K=None, C=None):
     # print(linedict[:7])
     
     bovfs = np.zeros((0,K)) # bag-of-visual-features
-    cline = np.zeros((0,C))
-    label = np.zeros((0,1))
+    cline = np.zeros((0,1))
+    label = np.zeros((0,C))
 
     for j in range(len(cates)):
         # cate level
@@ -144,7 +144,7 @@ def apply_kmeans_model(cates=None, round=None, flag=None, K=None, C=None):
 
                 # label processing
                 l = np.zeros((1,C)) # one-zero label
-                l[j] = 1
+                l[0,j] = 1
 
                 # predicting
                 # index = kms.predict(s)
@@ -175,7 +175,7 @@ def apply_kmeans_model(cates=None, round=None, flag=None, K=None, C=None):
 
     # to reduce the memory load
     bovfs = np.array(bovfs)
-    label = np.array(label).reshape(-1,1)
+    label = np.array(label)
     cline = np.array(cline).reshape(-1,1)
 
     print([cline.shape, label.shape, bovfs.shape])
