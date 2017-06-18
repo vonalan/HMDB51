@@ -71,5 +71,5 @@ if __name__ == '__main__':
     acc_testa = calc_acc(y_testa, out_testa)
     err_testa = calc_err(y_testa, out_testa)
 
-    stsm_train = stsm.calc_stsm(x_train, y_train, rbfnnC.W, rbfnnC.U, rbfnnC.V)
+    stsm_train = stsm.calc_stsm(x_train, y_train, rbfnnC.W, rbfnnC.U, rbfnnC.V, Q=0.1)
     lge_train = np.power(np.sqrt(err_train) + np.sqrt(stsm_train),2)
