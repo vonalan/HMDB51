@@ -99,7 +99,7 @@ def generate_kmeans_model(cates=None, round=None, flag=None, K=None):
     # centroids = np.load('../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K)) 
 
 
-def apply_kmeans_model(cates=None, round=None, flag=None, K=None):
+def apply_kmeans_model(cates=None, round=None, flag=None, K=None, C=None):
     '''generating cline, label and bag-of-features, which can be feed to classifier or regressor directly'''
     # joblib.dump(kms, '../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K), compress=3)
     # kms = joblib.load('../data/kmeans_r%d_f%d_k%d.model'%(round, flag, K))
@@ -121,7 +121,7 @@ def apply_kmeans_model(cates=None, round=None, flag=None, K=None):
     # print(linedict[:7])
     
     bovfs = np.zeros((0,K)) # bag-of-visual-features
-    cline = np.zeros((0,1))
+    cline = np.zeros((0,C))
     label = np.zeros((0,1))
 
     for j in range(len(cates)):
@@ -138,10 +138,15 @@ def apply_kmeans_model(cates=None, round=None, flag=None, K=None):
 
             if mask == flag:
                 c,s = read_stip_file(path='%s/%s/%s.txt'%(stipdir, cates[j], vname))
-                # processing
+
+                # cline processing
                 c = np.array([c]).reshape((-1, 1))
-                l = np.array([j]).reshape((-1, 1))
-                # predicting 
+
+                # label processing
+                l = np.zeros((1,C)) # one-zero label
+                l[j] = 1
+
+                # predicting
                 # index = kms.predict(s)
                 index = knn_search(s, centroids)
                 print(index.shape, index[:10,:].T)
@@ -196,6 +201,7 @@ if __name__ == '__main__':
     round = int(sys.argv[1])
     flag = sys.argv[2]
     K = int(sys.argv[3])
+    C = 51
     
     # generate_kmeans_model(cates=cates, round=round, flag=flag, K=K)
-    apply_kmeans_model(cates=cates, round=round, flag=flag, K=K)
+    apply_kmeans_model(cates=cates, round=round, flag=flag, K=K, C=C)

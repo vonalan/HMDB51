@@ -15,10 +15,10 @@ def load_data(round=None, flag=None, K=None):
     '''cline, label, bovfs'''
     cline = np.load('../data/cline_r%d_f%s_k%d.npy'%(round, flag, K))
     label = np.load('../data/label_r%d_f%s_k%d.npy'%(round, flag, K))
-    bofvs = np.load('../data/bofvs_r%d_f%s_k%d.npy'%(round, flag, K))
-    
+    bofvs = np.load('../data/bovfs_r%d_f%s_k%d.npy'%(round, flag, K))
+
+    print(cline.shape, label.shape, bofvs.shape)
     return cline, label, bofvs
-    # pass 
 
 
 # scale to [-1,1]
@@ -65,11 +65,11 @@ if __name__ == '__main__':
 
     rbfnnC = rbfnn.RBFNN(indim=K, numCenter=M, outdim=C, alpha=1.0)
 
-    c_train, y_train, x_train = load_data(round=round, flag='1', K=K)
+    c_train, y_train, x_train = load_data(round=round, flag='2', K=K)
     x_train, bias, scale = auto_normalize(x_train, bias=0.0, scale=1.0, mode='train')
     rbfnnC.fit(x_train, y_train)
 
-    c_testa, y_testa, x_testa = load_data(round=round, flag='1', K=K)
+    c_testa, y_testa, x_testa = load_data(round=round, flag='2', K=K)
     x_testa, _, _ = auto_normalize(x_testa, bias=bias, scale=scale, mode='valid')
 
     out_train = rbfnnC.predict(x_train)

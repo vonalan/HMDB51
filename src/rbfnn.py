@@ -3,6 +3,14 @@
 
 import numpy as np
 import scipy.spatial.distance as sciDist
+import sklearn.cluster as sklCluster
+
+
+def kMeans(dataSet=None, k=None):
+    kms = sklCluster.KMeans(n_clusters=k, n_jobs=1, random_state=0)
+    kms.fit(dataSet)
+
+    return kms
 
 
 def numCenterAssign(numCenter, numSamples):
@@ -47,7 +55,7 @@ def innerCluster(trainX, trainY, numCenter, alpha):
         subX = trainX[trainY[:, i] == 1, :]
 
         '''compute U'''
-        u, _, _ = dataProcess.kMeans(subX, int(cn[0, i]))
+        u = kMeans(subX, int(cn[0, i]))
         U[begin:end, :] = u
 
 
@@ -85,7 +93,7 @@ def innerCluster(trainX, trainY, numCenter, alpha):
 def discritize(dataset, numClass=None, num_each_class=None, mode='kMeans'): 
     '''for regression problem purpose'''
     m,n = dataset.shape 
-    out = numpy.zeros((m,1))
+    out = np.zeros((m,1))
     
     flag = False 
     while not flag: 
@@ -96,7 +104,7 @@ def discritize(dataset, numClass=None, num_each_class=None, mode='kMeans'):
         print(out)
         n_lbs = len(set(out))
 
-        count_each_class = numpy.histogram(out, numClass, range=(0,numClass))[0]
+        count_each_class = np.histogram(out, numClass, range=(0,numClass))[0]
         print(count_each_class)
         flag = (count_each_class >= num_each_class).all()
 
@@ -104,7 +112,7 @@ def discritize(dataset, numClass=None, num_each_class=None, mode='kMeans'):
     
     ''' how to optimize the codes below '''
     # res[:,out] = 1 ?!!
-    res = numpy.zeros((m,numClass))
+    res = np.zeros((m,numClass))
     for i in range(m): 
         res[i,out[i]] = 1
 
@@ -155,7 +163,7 @@ class RBFNN(object):
 
     # calculate the parameters of hidden neurons in Network
     def centersCalc(self, trainX, trainY):
-        self.U, self.V = dataProcess.innerCluster(trainX, trainY, self.numCenter, self.alpha)
+        self.U, self.V = innerCluster(trainX, trainY, self.numCenter, self.alpha)
         '''bug bug bug bug'''
         '''alpha'''
         '''bug bug bug bug'''
