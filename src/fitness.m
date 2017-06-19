@@ -5,19 +5,23 @@ function [ O ] = fitness(S)
     O = zeros(size(S,1), resDim); 
     
     centroids_path = ''; 
-    centroids = import(centroids_path); 
+    centroids = import(centroids_path);
 
     % matlabpool local 4; 
     parfor i  = 1 : size(S,1)
         fprintf('calculating fitness for individual %d of %d ... \n',i, size(S,1)); 
+
+        % mask 
         s = S(i,:); 
         mcentroids = centroids(s==1,:); 
         k = size(mcentroids,1); 
         
-        [cline, label, bovfs] = read_samples(round, flag, k)
-        
-        [mse, stsm, trainAcc, testAcc] = rbfnn(hist_train, hist_test, y_train, y_test); 
+        % flag = {0:not used, 1:train, 2:testa}; 
+        [cline_1, label_1, bovfs_1] = kmeans_transform(cates, round, 1, K, C, centroids); 
+        [cline_2, label_2, bovfs_2] = kmeans_transform(cates, round, 2, K, C, centroids); 
 
+        % train and validate classifier
+        [mse, stsm, trainAcc, testAcc] = run_rbfnn(bovfs_1, bovfs_2, label_1, label_2); 
         
         O(i,:) = [mse, stsm, trainAcc, testAcc]; 
     end; 
@@ -59,24 +63,7 @@ function [cline, label, bovfs] = kmeans_transform(cates, round, flag, K, C, cent
 end; 
 
 
+% bug bug bug; 
 function stips = read_stip_file(stip_path)
     stips = import(stip_path)(4:,:); 
 end; 
-
-
-function x_bow  = build_hist(cdata, xdata, nbins)
-    x_bow = zeros(size(cdata, 1), nbins); 
-    
-    cbegin = 1; 
-    % cend = 1; 
-    for i = 1 : size(cdata, 1)        
-        cend = cbegin + cdata(i,:) - 1; 
-        x_temp = xdata(cbegin:cend, :); 
-        hist = tabulate(x_temp)'; 
-        % x_bow(i,1:size(hist,2)) = hist(3,:); 
-        x_bow(i,1:size(hist,2)) = hist(2,:); 
-        
-        cbegin = cend + 1; 
-    end; 
-end
-
