@@ -7,7 +7,7 @@ import numpy as np
 from sklearn.metrics import mean_squared_error as sklmse
 
 import rbfnn
-import stsm
+import stsm_pseudo
 import scale
 
 
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     K = 128
     C = 51
 
-    for i in range(2,20): 
+    for i in range(5,6):
         M = C*i
 
         rbfnnC = rbfnn.RBFNN(indim=K, numCenter=M, outdim=C, alpha=1.0)
@@ -80,12 +80,12 @@ if __name__ == '__main__':
         
         acc_train = calc_acc(y_train, out_train)
         err_train = calc_err(y_train, out_train)
-        # stsm_train = stsm.calc_stsm(x_train, y_train, rbfnnC.W, rbfnnC.U, rbfnnC.V, Q=0.1)
+        # stsm_train = stsm_pseudo.calc_stsm(x_train, y_train, rbfnnC.W, rbfnnC.U, rbfnnC.V, Q=0.1)
         # lgem_train = np.power(np.sqrt(err_train) + np.sqrt(stsm_train),2)
 
         acc_testa = calc_acc(y_testa, out_testa)
         err_testa = calc_err(y_testa, out_testa)
-        # stsm_testa = stsm.calc_stsm(x_testa, y_testa, rbfnnC.W, rbfnnC.U, rbfnnC.V, Q=0.1)
+        # stsm_testa = stsm_pseudo.calc_stsm(x_testa, y_testa, rbfnnC.W, rbfnnC.U, rbfnnC.V, Q=0.1)
         # lgem_testa = np.power(np.sqrt(err_testa) + np.sqrt(stsm_testa),2)
 
         # print(acc_train, err_train.mean(), acc_testa, err_testa.mean(), stsm_train.mean(), lgem_train.mean())
