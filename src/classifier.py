@@ -22,23 +22,23 @@ def load_data(round=None, flag=None, K=None):
 
 
 # scale to [-1,1]
-def auto_scale(dataset, xbias=0.0, xscale=1.0, mode=None):
-    bias = xbias
-    scale = xscale
+def auto_scale(dataset, bias=None, scale=None, mode=None):
+    xbias = bias
+    xscale = scale
     
     if mode == 'train': 
-        xmin = dataset.min() 
-        xmax = dataset.max() 
-        bias = (xmax + xmin)/2.0
-        scale = xmax - bias
+        xmin = dataset.min(axis=0) 
+        xmax = dataset.max(axis=0) 
+        xbias = (xmax + xmin)/2.0
+        xscale = xmax - bias
     elif mode == 'valid': 
         pass 
     else: 
         raise Exception('Value Error! ')
-
+    
     dataset = (dataset - xbias)/xscale
 
-    return dataset, bias, scale
+    return dataset, xbias, xscale
 
 
 # api
@@ -59,7 +59,7 @@ def calc_acc(y_true, y_predict):
 if __name__ == '__main__':
     round = 1 
     # flag = '1'
-    K = 4000
+    K = 128
     C = 51
 
     for i in range(2,20): 
