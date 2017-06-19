@@ -60,30 +60,33 @@ if __name__ == '__main__':
     round = 1 
     # flag = '1'
     K = 4000
-    M = 90
     C = 51
 
-    rbfnnC = rbfnn.RBFNN(indim=K, numCenter=M, outdim=C, alpha=1.0)
+    for i in range(2,20): 
+        M = C*i
 
-    c_train, y_train, x_train = load_data(round=round, flag='2', K=K)
-    x_train, bias, scale = auto_normalize(x_train, bias=0.0, scale=1.0, mode='train')
-    rbfnnC.fit(x_train, y_train)
+        rbfnnC = rbfnn.RBFNN(indim=K, numCenter=M, outdim=C, alpha=1.0)
 
-    c_testa, y_testa, x_testa = load_data(round=round, flag='2', K=K)
-    x_testa, _, _ = auto_normalize(x_testa, bias=bias, scale=scale, mode='valid')
+        c_train, y_train, x_train = load_data(round=round, flag='1', K=K)
+        x_train, bias, scale = auto_normalize(x_train, bias=0.0, scale=1.0, mode='train')
+        rbfnnC.fit(x_train, y_train)
 
-    out_train = rbfnnC.predict(x_train)
-    out_testa = rbfnnC.predict(x_testa)
-    print(out_train.shape, out_testa.shape)
-    
-    acc_train = calc_acc(y_train, out_train)
-    err_train = calc_err(y_train, out_train)
-    stsm_train = stsm.calc_stsm(x_train, y_train, rbfnnC.W, rbfnnC.U, rbfnnC.V, Q=0.1)
-    lgem_train = np.power(np.sqrt(err_train) + np.sqrt(stsm_train),2)
+        c_testa, y_testa, x_testa = load_data(round=round, flag='2', K=K)
+        x_testa, _, _ = auto_normalize(x_testa, bias=bias, scale=scale, mode='valid')
 
-    acc_testa = calc_acc(y_testa, out_testa)
-    err_testa = calc_err(y_testa, out_testa)
-    # stsm_testa = stsm.calc_stsm(x_testa, y_testa, rbfnnC.W, rbfnnC.U, rbfnnC.V, Q=0.1)
-    # lgem_testa = np.power(np.sqrt(err_testa) + np.sqrt(stsm_testa),2)
+        out_train = rbfnnC.predict(x_train)
+        out_testa = rbfnnC.predict(x_testa)
+        print(out_train.shape, out_testa.shape)
+        
+        acc_train = calc_acc(y_train, out_train)
+        err_train = calc_err(y_train, out_train)
+        # stsm_train = stsm.calc_stsm(x_train, y_train, rbfnnC.W, rbfnnC.U, rbfnnC.V, Q=0.1)
+        # lgem_train = np.power(np.sqrt(err_train) + np.sqrt(stsm_train),2)
 
-    print(acc_train, err_train.mean(), acc_testa, err_testa.mean(), stsm_train.mean(), lgem_train.mean())
+        acc_testa = calc_acc(y_testa, out_testa)
+        err_testa = calc_err(y_testa, out_testa)
+        # stsm_testa = stsm.calc_stsm(x_testa, y_testa, rbfnnC.W, rbfnnC.U, rbfnnC.V, Q=0.1)
+        # lgem_testa = np.power(np.sqrt(err_testa) + np.sqrt(stsm_testa),2)
+
+        # print(acc_train, err_train.mean(), acc_testa, err_testa.mean(), stsm_train.mean(), lgem_train.mean())
+        print(M, acc_train, err_train.mean(), acc_testa, err_testa.mean())
