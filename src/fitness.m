@@ -1,18 +1,18 @@
 function [ O ] = fitness(S)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+    % calculating fitness for population; 
 
-    % global c_train c_test x_train x_test centroids y_train y_test; 
-    
     resDim = 4;
     O = zeros(size(S,1), resDim); 
     
+    centroids_path = ''; 
+    centroids = import(centroids_path); 
+
     % matlabpool local 4; 
     parfor i  = 1 : size(S,1)
         fprintf('calculating fitness for individual %d of %d ... \n',i, size(S,1)); 
         s = S(i,:); 
         mcentroids = centroids(s==1,:); 
-        nbins = size(mcentroids,1); 
+        k = size(mcentroids,1); 
         
         [cline, label, bovfs] = read_samples(round, flag, k)
         
@@ -26,25 +26,45 @@ function [ O ] = fitness(S)
 
 end
 
-function [cline, label, bovfs] = read_samples(round, flag, k): 
-    cline = []; 
-    label = []; 
-    bovfs = []; 
-    splitfile = import(splitfile); 
-    for c = 1 : size(C,1): 
-        for line in stipfile: 
 
-        knn_train = knnsearch(mcentroids, x_train); 
-        knn_test = knnsearch(mcentroids, x_test); 
+function [cline, label, bovfs] = kmeans_transform(cates, round, flag, K, C, centroids)
+    cline = zeros((0,1)); 
+    label = zeros((0,C)); 
+    bovfs = zeros((0,K)); 
 
-        hist_train = build_bow(c_train, knn_train, nbins);
-        hist_test = build_bow(c_test, knn_test, nbins);
+    for j = 1 : size(cates,1)
+        print('%s/%s_test_split%d.txt'%(splitdir, cates[j], round)); 
+
+        split_path = '%s/%s_test_split%d.txt'%(splitdir, cates[j], round); 
+        split_set = import(split_path); 
+
+        for k = 1 : size(split_set)
+            [vname, mask] = [split_set(k,1), split_set(k,2)]
+
+            if mask == flag
+                stip_path = '%s/%s/%s.txt'%(stipdir, cates[j], vname); 
+                [c,s] = read_stip_file(stip_path); 
+
+                s= knnsearch(centroids, s); 
+                % s = build_hist(c, s, k); 
+                s = tabulate(s); 
+
+                cline = [cline;c]; 
+                label = [label;c];
+                bovfs = [bovfs;s];
+            end; 
         end; 
-    end;
-end;
+    end; 
+    print(size(cline), size(label), size(bovfs)); 
+end; 
 
 
-function x_bow  = build_bow(cdata, xdata, nbins)
+function stips = read_stip_file(stip_path)
+    stips = import(stip_path)(4:,:); 
+end; 
+
+
+function x_bow  = build_hist(cdata, xdata, nbins)
     x_bow = zeros(size(cdata, 1), nbins); 
     
     cbegin = 1; 
