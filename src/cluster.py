@@ -137,8 +137,8 @@ def apply_kmeans_model(cates=None, round=None, flag=None, K=None, C=None):
             vname, mask = sline[0], sline[1]
 
             if mask == flag:
-                # c,s = read_stip_file(path='%s/%s/%s.txt'%(stipdir, cates[j], vname))
-                s = np.loadtxt('%s/%s/%s.txt'%(stipdir, cates[j], vname), comments='#') # faster version
+                # c,s = read_stip_file(path='%s/%s/%s.txt'%(stipdir, cates[j], vname)) # version 1
+                s = np.loadtxt('%s/%s/%s.txt'%(stipdir, cates[j], vname), comments='#')[:,7:] # version 2, however, much slower
                 c = s.shape[0]
 
                 # cline processing
