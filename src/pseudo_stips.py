@@ -64,7 +64,7 @@ def aggragate_stip_file(round=None, flag=None):
     }
 
     random.seed(a=round)
-    linedict = np.array(random.sample([i for i in range(clinedict[round])], 100000))
+    linedict = np.array(random.sample([i for i in range(clinedict[round])], 250000))
     print(linedict[:7])
     
     stips = []
