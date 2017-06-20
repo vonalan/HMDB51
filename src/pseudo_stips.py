@@ -64,7 +64,7 @@ def aggragate_stip_file(round=None, flag=None):
     }
 
     random.seed(a=round)
-    linedict = np.array(random.sample([i for i in range(clinedict[round])], 250000))
+    linedict = np.array(random.sample([i for i in range(clinedict[round])], clinedict[round]))
     print(linedict[:7])
     
     stips = []
@@ -109,9 +109,9 @@ def aggragate_stip_file(round=None, flag=None):
 
     print([cline.shape, label.shape, stips.shape])
 
-    np.save('../data/stips_r%d_f%s'%(round, flag), stips)
-    np.save('../data/label_r%d_f%s'%(round, flag), label)
-    np.save('../data/cline_r%d_f%s'%(round, flag), cline)
+    np.save('../data/stips_r%d_f%s_s%d'%(round, flag, stips.shape[0]), stips)
+    np.save('../data/label_r%d_f%s_s%d'%(round, flag, stips.shape[0]), label)
+    np.save('../data/cline_r%d_f%s_s%d'%(round, flag, stips.shape[0]), cline)
 
 
 if __name__ == '__main__': 
